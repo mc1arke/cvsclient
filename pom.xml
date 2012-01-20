@@ -3,7 +3,7 @@
     <groupId>org.jenkins-ci.lib</groupId>
     <artifactId>cvsclient</artifactId>
     <packaging>jar</packaging>
-    <version>701-jenkins-1.0</version>
+    <version>701-jenkins-2.0-SNAPSHOT</version>
     <name>CvsClient</name>
     <description>Netbeans cvsclient library patched for serialization</description>
     <licenses>
