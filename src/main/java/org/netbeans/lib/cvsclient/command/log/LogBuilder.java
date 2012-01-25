@@ -318,7 +318,9 @@ public class LogBuilder implements Builder {
                     // also add a default GMT timezone at the end, if the server
                     // already put one in this one will be ignored by the parser
                     dateString = dateString.replace('/', '-') + " +0000"; // NOI18N
-                    date = dateFormat.parse(dateString);
+                    synchronized (dateFormat) {
+                        date = dateFormat.parse(dateString);
+                    }
                 } catch (final ParseException e) {
                     BugLog.getInstance().bug("Couldn't parse date " + dateString); // NOI18N
                 }

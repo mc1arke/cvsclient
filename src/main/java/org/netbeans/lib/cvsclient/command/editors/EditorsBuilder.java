@@ -161,8 +161,10 @@ public class EditorsBuilder implements Builder {
         final int lastSpaceIndex = Math.min(dateString.lastIndexOf(' '), dateString.length());
 
         // dateString = dateString.substring(0, lastSpaceIndex).trim();
-        dateString = dateString.substring(firstSpaceIndex, lastSpaceIndex).trim();
+        String modifiedDateString = dateString.substring(firstSpaceIndex, lastSpaceIndex).trim();
 
-        return DATE_FORMAT.parse(dateString);
+        synchronized (DATE_FORMAT) {
+            return DATE_FORMAT.parse(modifiedDateString);
+        }
     }
 }

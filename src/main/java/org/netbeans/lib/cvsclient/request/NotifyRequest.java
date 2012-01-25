@@ -100,7 +100,9 @@ public class NotifyRequest extends Request {
         buffer.append('\n');
         buffer.append(command);
         buffer.append('\t');
-        buffer.append(DATE_FORMAT.format(new Date()));
+        synchronized (DATE_FORMAT) {
+            buffer.append(DATE_FORMAT.format(new Date()));
+        }
         buffer.append('\t');
         buffer.append(HOST_NAME);
         buffer.append('\t');

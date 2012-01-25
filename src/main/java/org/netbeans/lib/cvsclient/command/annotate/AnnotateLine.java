@@ -115,7 +115,9 @@ public class AnnotateLine {
     public void setDateString(final String dateString) {
         this.dateString = dateString;
         try {
-            date = DATE_FORMAT.parse(dateString);
+            synchronized (DATE_FORMAT) {
+                date = DATE_FORMAT.parse(dateString);
+            }
         } catch (final ParseException ex) {
             // print stacktrace, because it's a bug
             ex.printStackTrace();
@@ -147,7 +149,7 @@ public class AnnotateLine {
      * Returns the line's number.
      */
     public Integer getLineNumInteger() {
-        return new Integer(lineNum);
+        return lineNum;
     }
 
     /**

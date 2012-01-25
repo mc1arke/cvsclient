@@ -46,6 +46,7 @@
  *****************************************************************************/
 package org.netbeans.lib.cvsclient.admin;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -91,10 +92,12 @@ public final class Entry {
      * Returns the instance of the date formatter for sticky dates.
      */
     private static SimpleDateFormat getStickyDateFormatter() {
-        if (stickyDateFormatter == null) {
-            stickyDateFormatter = new SimpleDateFormat("yyyy.MM.dd.hh.mm.ss"); // NOI18N
+        synchronized (Entry.class) {
+            if (stickyDateFormatter == null) {
+                stickyDateFormatter = new SimpleDateFormat("yyyy.MM.dd.hh.mm.ss"); // NOI18N
+            }
+            return stickyDateFormatter;
         }
-        return stickyDateFormatter;
     }
 
     /**
@@ -120,7 +123,7 @@ public final class Entry {
     /**
      * Returns the instance of the Last-Modified-Date-Formatter.
      */
-    public static SimpleDateFormat getLastModifiedDateFormatter() {
+    public static DateFormat getLastModifiedDateFormatter() {
         final SimpleDateFormat df = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.US); // NOI18N
         df.setTimeZone(getTimeZone());
         return df;
@@ -215,14 +218,18 @@ public final class Entry {
      * @param entryLine
      *            the entry line in standard CVS format
      */
-    protected void init(String entryLine) {
+    protected void init(final String originalEntryLine) {
         // System.err.println("Constructing an entry line from: " + entryLine);
         // try to parse the entry line, if we get stuck just
         // throw an illegal argument exception
+        
+        String entryLine;
 
-        if (entryLine.startsWith(DIRECTORY_PREFIX)) {
+        if (originalEntryLine.startsWith(DIRECTORY_PREFIX)) {
             directory = true;
-            entryLine = entryLine.substring(1);
+            entryLine = originalEntryLine.substring(1);
+        } else {
+            entryLine = originalEntryLine;
         }
 
         // first character is a slash, so name is read from position 1
@@ -270,10 +277,8 @@ public final class Entry {
                 }
             }
         } catch (final Exception e) {
-            System.err.println("Error parsing entry line: " + e); // NOI18N
-            e.printStackTrace();
             throw new IllegalArgumentException("Invalid entry line: " + // NOI18N
-                            entryLine);
+                            entryLine, e);
         }
     }
 

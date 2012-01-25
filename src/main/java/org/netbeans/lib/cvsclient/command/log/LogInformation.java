@@ -44,6 +44,7 @@
 package org.netbeans.lib.cvsclient.command.log;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,7 +63,7 @@ import org.netbeans.lib.cvsclient.util.BugLog;
  * @author Milos Kleint
  */
 public class LogInformation extends FileInfoContainer {
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z"); // NOI18N
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z"); // NOI18N
     private File file;
     private String repositoryFilename;
     private String headRevision;
@@ -496,7 +497,9 @@ public class LogInformation extends FileInfoContainer {
                 // also add a default GMT timezone at the end, if the server
                 // already put one in this one will be ignored by the parser
                 dateString = dateString.replace('/', '-') + " +0000";
-                date = DATE_FORMAT.parse(dateString);
+                synchronized (DATE_FORMAT) {
+                    date = DATE_FORMAT.parse(dateString);
+                }
             } catch (final Exception ex) {
                 BugLog.getInstance().bug("Couldn't parse date " + dateString);
             }

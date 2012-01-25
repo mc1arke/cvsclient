@@ -46,6 +46,7 @@
  *****************************************************************************/
 package org.netbeans.lib.cvsclient.response;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -65,7 +66,7 @@ class ModTimeResponse implements Response {
     /**
      * The formatter responsible for converting server dates to our own dates
      */
-    protected static final SimpleDateFormat dateFormatter;
+    protected static final DateFormat dateFormatter;
 
     /**
      * The way the server formats dates
@@ -94,7 +95,10 @@ class ModTimeResponse implements Response {
             // We remove the ending because SimpleDateFormat does not parse
             // +xxxx, only GMT+xxxx and this avoid us having to do String
             // concat
-            final Date date = dateFormatter.parse(dateString.substring(0, dateString.length() - 6));
+            final Date date;
+            synchronized (dateFormatter) {
+                date = dateFormatter.parse(dateString.substring(0, dateString.length() - 6));
+            }
             if (date.getTime() < 0) {
                 // now we're in trouble - see #18232 issue.
                 // we need to adjust the modified time..
