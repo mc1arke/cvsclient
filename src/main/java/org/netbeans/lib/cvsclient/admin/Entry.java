@@ -86,19 +86,7 @@ public final class Entry {
     /**
      * The instance of the date formatter for sticky dates.
      */
-    private static SimpleDateFormat stickyDateFormatter;
-
-    /**
-     * Returns the instance of the date formatter for sticky dates.
-     */
-    private static SimpleDateFormat getStickyDateFormatter() {
-        synchronized (Entry.class) {
-            if (stickyDateFormatter == null) {
-                stickyDateFormatter = new SimpleDateFormat("yyyy.MM.dd.hh.mm.ss"); // NOI18N
-            }
-            return stickyDateFormatter;
-        }
-    }
+    private static DateFormat stickyDateFormatter = new SimpleDateFormat("yyyy.MM.dd.hh.mm.ss");
 
     /**
      * Indicates a binary file.
@@ -268,8 +256,9 @@ public final class Entry {
                         // So I just convert it from String to Date and back.
                         try {
                             final String dateString = tagOrDate.substring(DATE.length());
-                            final Date stickyDate = getStickyDateFormatter().parse(dateString);
-                            setDate(stickyDate);
+                            synchronized (stickyDateFormatter) {
+                                setDate(stickyDateFormatter.parse(dateString));
+                            }
                         } catch (final ParseException exc) {
                             System.err.println("We got another inconsistency in the library's date formatting."); // NOI18N
                         }
@@ -454,9 +443,9 @@ public final class Entry {
         if (getDate() == null) {
             return null;
         }
-        final SimpleDateFormat format = getStickyDateFormatter();
-        final String dateFormatted = format.format(getDate());
-        return dateFormatted;
+        synchronized(stickyDateFormatter) {
+            return stickyDateFormatter.format(getDate());
+        }
     }
 
     /**
