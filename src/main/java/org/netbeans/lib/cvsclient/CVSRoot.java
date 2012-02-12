@@ -702,7 +702,7 @@ public class CVSRoot {
      * @param password
      *            The password
      */
-    protected void setPassword(final String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 

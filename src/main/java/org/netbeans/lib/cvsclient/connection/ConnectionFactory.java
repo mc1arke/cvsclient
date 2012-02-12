@@ -59,11 +59,17 @@ import org.netbeans.lib.cvsclient.CVSRoot;
  *         Oy
  */
 public class ConnectionFactory {
+    
+    private static ConnectionIdentity connectionIdentity = new ConnectionIdentity();
 
     /**
      * <b>Protected Constructor</b>
      */
     protected ConnectionFactory() {
+    }
+    
+    public static ConnectionIdentity getConnectionIdentity() {
+        return connectionIdentity;
     }
 
     /**
@@ -99,15 +105,13 @@ public class ConnectionFactory {
         }
 
         final String method = root.getMethod();
-        // SSH2Connection (server, ext)
-        /*
-         * SSH2Connection is TBD if ( method == null || CVSRoot.METHOD_SERVER ==
-         * method || CVSRoot.METHOD_EXT == method ) { // NOTE: If you want to
-         * implement your own authenticator you have to construct SSH2Connection
-         * yourself SSH2Connection con = new SSH2Connection( root, new
-         * ConsoleAuthenticator() ); return con; }
-         */
+        
+        // ext connection
+        if (null == method || CVSRoot.METHOD_SERVER == method || CVSRoot.METHOD_EXT == method) {
+            return new SSHConnection(root, connectionIdentity);
+        }
 
+        
         // PServerConnection (pserver)
         if (CVSRoot.METHOD_PSERVER == method) {
             final PServerConnection con = new PServerConnection(root);
