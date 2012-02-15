@@ -338,6 +338,8 @@ public class DefaultFileHandler implements FileHandler {
         final boolean readOnly = resetReadOnly(file, mode);
 
         createNewFile(file);
+        setFileMode(mode, file);
+        
         // For CRLF conversion, we have to read the file
         // into a temp file, then do the conversion. This is because we cannot
         // perform a sequence of readLines() until we've read the file from
@@ -426,6 +428,7 @@ public class DefaultFileHandler implements FileHandler {
         final boolean readOnly = resetReadOnly(file, mode);
 
         createNewFile(file);
+        setFileMode(mode, file);
         // FUTURE: optimisation possible - no need to use a temp file if there
         // is no post processing required (e.g. unzipping). So perhaps enhance
         // the interface to allow this stage to be optional
@@ -572,4 +575,27 @@ public class DefaultFileHandler implements FileHandler {
         this.globalOptions = globalOptions;
         transmitTextFilePreprocessor.setTempDir(globalOptions.getTempDir());
     }
+    
+    protected void setFileMode(String mode, File file) {
+        if (mode == null) {
+            return;
+        }
+        
+        for (String currentMode : mode.split(",")) {
+            String[] currentModeParts = currentMode.trim().split("=");
+            boolean ownerOnly = currentModeParts[0].trim().equals("u");
+            for (char accessType : currentModeParts[1].trim().toCharArray()) {
+                if (accessType == 'r') {
+                    file.setReadable(true, ownerOnly);
+                }
+                else if (accessType == 'w') {
+                    file.setWritable(true, ownerOnly);
+                }
+                else if (accessType == 'x') {
+                    file.setExecutable(true, ownerOnly);
+                }
+            }
+        }
+    }
+
 }
