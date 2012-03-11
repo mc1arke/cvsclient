@@ -47,12 +47,16 @@ package org.netbeans.lib.cvsclient;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.Ignore;
+
 /**
  * Set of utility methods.
  *
  * @author Petr Kuzel
  */
+@Ignore
 public class TestKit {
+
     public static File createTmpFolder(String prefix) throws IOException {
         String tmpDir = System.getProperty("java.io.tmpdir");  // NOI18N
         File tmpFolder = new File(tmpDir);

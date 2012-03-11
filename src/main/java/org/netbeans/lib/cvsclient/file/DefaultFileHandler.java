@@ -581,21 +581,27 @@ public class DefaultFileHandler implements FileHandler {
             return;
         }
         
-        for (String currentMode : mode.split(",")) {
-            String[] currentModeParts = currentMode.trim().split("=");
-            boolean ownerOnly = currentModeParts[0].trim().equals("u");
-            for (char accessType : currentModeParts[1].trim().toCharArray()) {
-                if (accessType == 'r') {
-                    file.setReadable(true, ownerOnly);
-                }
-                else if (accessType == 'w') {
-                    file.setWritable(true, ownerOnly);
-                }
-                else if (accessType == 'x') {
-                    file.setExecutable(true, ownerOnly);
+        try {
+            for (String currentMode : mode.split(",")) {
+                String[] currentModeParts = currentMode.trim().split("=");
+                boolean ownerOnly = currentModeParts[0].trim().equals("u");
+                for (char accessType : currentModeParts[1].trim().toCharArray()) {
+                    if (accessType == 'r') {
+                        file.setReadable(true, ownerOnly);
+                    }
+                    else if (accessType == 'w') {
+                        file.setWritable(true, ownerOnly);
+                    }
+                    else if (accessType == 'x') {
+                        file.setExecutable(true, ownerOnly);
+                    }
                 }
             }
-        }
+        } catch (NoSuchMethodError err) {
+           /* ignore this - the OS doesn't handle permissions
+            * so leave the file with default access rights
+            */
+	}
     }
 
 }
