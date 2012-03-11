@@ -46,8 +46,6 @@ package org.netbeans.lib.cvsclient;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Ignore;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
