@@ -56,6 +56,7 @@ import java.io.LineNumberReader;
 import java.io.OutputStream;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.GlobalOptions;
 import org.netbeans.lib.cvsclient.command.add.AddCommand;
