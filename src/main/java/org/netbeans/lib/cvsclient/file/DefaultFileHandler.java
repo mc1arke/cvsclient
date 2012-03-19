@@ -63,6 +63,7 @@ import org.netbeans.lib.cvsclient.request.Request;
 import org.netbeans.lib.cvsclient.util.BugLog;
 import org.netbeans.lib.cvsclient.util.LoggedDataInputStream;
 import org.netbeans.lib.cvsclient.util.LoggedDataOutputStream;
+import org.netbeans.lib.cvsclient.util.Logger;
 
 /**
  * Provides a basic implementation of FileHandler, and does much of the handling
@@ -79,7 +80,7 @@ public class DefaultFileHandler implements FileHandler {
     /**
      * Whether to emit debug information.
      */
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     /**
      * The size of chunks read from disk.
@@ -585,23 +586,30 @@ public class DefaultFileHandler implements FileHandler {
             for (String currentMode : mode.split(",")) {
                 String[] currentModeParts = currentMode.trim().split("=");
                 boolean ownerOnly = currentModeParts[0].trim().equals("u");
-                for (char accessType : currentModeParts[1].trim().toCharArray()) {
-                    if (accessType == 'r') {
-                        file.setReadable(true, ownerOnly);
-                    }
-                    else if (accessType == 'w') {
-                        file.setWritable(true, ownerOnly);
-                    }
-                    else if (accessType == 'x') {
-                        file.setExecutable(true, ownerOnly);
-                    }
+                if(currentModeParts.length > 1){
+                	setPermissions(file, currentModeParts, ownerOnly);                	
                 }
             }
-        } catch (NoSuchMethodError err) {
+        } catch (Exception err) {
+        	throw new RuntimeException("mode was : " + mode, err);
            /* ignore this - the OS doesn't handle permissions
             * so leave the file with default access rights
             */
 	}
     }
+
+	private void setPermissions(File file, String[] currentModeParts, boolean ownerOnly) {
+		for (char accessType : currentModeParts[1].trim().toCharArray()) {
+			if (accessType == 'r') {
+				file.setReadable(true, ownerOnly);
+			}
+			else if (accessType == 'w') {
+				file.setWritable(true, ownerOnly);
+			}
+			else if (accessType == 'x') {
+				file.setExecutable(true, ownerOnly);
+			}
+		}
+	}
 
 }
