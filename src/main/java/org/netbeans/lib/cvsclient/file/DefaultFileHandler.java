@@ -590,8 +590,7 @@ public class DefaultFileHandler implements FileHandler {
                 	setPermissions(file, currentModeParts, ownerOnly);                	
                 }
             }
-        } catch (Exception err) {
-        	throw new RuntimeException("mode was : " + mode, err);
+        } catch (NoSuchMethodError err) {
            /* ignore this - the OS doesn't handle permissions
             * so leave the file with default access rights
             */
