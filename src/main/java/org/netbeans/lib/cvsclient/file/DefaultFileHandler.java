@@ -69,6 +69,7 @@ import org.netbeans.lib.cvsclient.util.LoggedDataOutputStream;
  * of reading and writing files and performing CRLF conversions.
  * 
  * @author Robert Greig
+ * @author James Carr
  */
 public class DefaultFileHandler implements FileHandler {
     /**
@@ -585,16 +586,8 @@ public class DefaultFileHandler implements FileHandler {
             for (String currentMode : mode.split(",")) {
                 String[] currentModeParts = currentMode.trim().split("=");
                 boolean ownerOnly = currentModeParts[0].trim().equals("u");
-                for (char accessType : currentModeParts[1].trim().toCharArray()) {
-                    if (accessType == 'r') {
-                        file.setReadable(true, ownerOnly);
-                    }
-                    else if (accessType == 'w') {
-                        file.setWritable(true, ownerOnly);
-                    }
-                    else if (accessType == 'x') {
-                        file.setExecutable(true, ownerOnly);
-                    }
+                if(currentModeParts.length > 1){
+                	setPermissions(file, currentModeParts, ownerOnly);                	
                 }
             }
         } catch (NoSuchMethodError err) {
@@ -603,5 +596,19 @@ public class DefaultFileHandler implements FileHandler {
             */
 	}
     }
+
+	private void setPermissions(File file, String[] currentModeParts, boolean ownerOnly) {
+		for (char accessType : currentModeParts[1].trim().toCharArray()) {
+			if (accessType == 'r') {
+				file.setReadable(true, ownerOnly);
+			}
+			else if (accessType == 'w') {
+				file.setWritable(true, ownerOnly);
+			}
+			else if (accessType == 'x') {
+				file.setExecutable(true, ownerOnly);
+			}
+		}
+	}
 
 }
