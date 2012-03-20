@@ -63,13 +63,13 @@ import org.netbeans.lib.cvsclient.request.Request;
 import org.netbeans.lib.cvsclient.util.BugLog;
 import org.netbeans.lib.cvsclient.util.LoggedDataInputStream;
 import org.netbeans.lib.cvsclient.util.LoggedDataOutputStream;
-import org.netbeans.lib.cvsclient.util.Logger;
 
 /**
  * Provides a basic implementation of FileHandler, and does much of the handling
  * of reading and writing files and performing CRLF conversions.
  * 
  * @author Robert Greig
+ * @author James Carr
  */
 public class DefaultFileHandler implements FileHandler {
     /**
@@ -80,7 +80,7 @@ public class DefaultFileHandler implements FileHandler {
     /**
      * Whether to emit debug information.
      */
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     /**
      * The size of chunks read from disk.
