@@ -339,7 +339,6 @@ public class DefaultFileHandler implements FileHandler {
         final boolean readOnly = resetReadOnly(file, mode);
 
         createNewFile(file);
-        setFileMode(mode, file);
         
         // For CRLF conversion, we have to read the file
         // into a temp file, then do the conversion. This is because we cannot
@@ -398,6 +397,7 @@ public class DefaultFileHandler implements FileHandler {
             tempFile.delete();
         }
 
+        setFileMode(mode, file);
         if (readOnly) {
             FileUtils.setFileReadOnly(file, true);
         }
@@ -429,7 +429,6 @@ public class DefaultFileHandler implements FileHandler {
         final boolean readOnly = resetReadOnly(file, mode);
 
         createNewFile(file);
-        setFileMode(mode, file);
         // FUTURE: optimisation possible - no need to use a temp file if there
         // is no post processing required (e.g. unzipping). So perhaps enhance
         // the interface to allow this stage to be optional
@@ -487,6 +486,7 @@ public class DefaultFileHandler implements FileHandler {
             tempFile.delete();
         }
 
+	setFileMode(mode, file);
         if (readOnly) {
             FileUtils.setFileReadOnly(file, true);
         }
