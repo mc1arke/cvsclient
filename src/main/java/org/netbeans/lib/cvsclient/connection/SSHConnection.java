@@ -121,16 +121,23 @@ public class SSHConnection extends AbstractConnection {
         
         JSch jsch = new JSch();
         try {
-            session = jsch.getSession(username, host, port);
-            session.setUserInfo(new SSHUserInfo());
-            
-            jsch.setKnownHosts(connectionIdentity.getKnownHostsFile());
-            jsch.addIdentity(connectionIdentity.getPrivateKeyPath(), connectionIdentity.getPrivateKeyPassword());
-
-            session.setSocketFactory(new SocketFactoryBridge(SocketFactory.getDefault()));
-            session.setConfig(props);
-            session.connect();
-        } catch (JSchException e) {
+             session = jsch.getSession(username, host, port);
+             session.setUserInfo(new SSHUserInfo());
+             String knownHostsFile = connectionIdentity.getKnownHostsFile();
+             String privateKeyPath = connectionIdentity.getPrivateKeyPath();
+             String separator = System.getProperty("file.separator");
+ 
+             knownHostsFile = knownHostsFile.replace("/", separator).replace("\\", separator);
+             privateKeyPath = privateKeyPath.replace("/", separator).replace("\\", separator);
+ 
+             
+             jsch.setKnownHosts(knownHostsFile);
+             jsch.addIdentity(privateKeyPath, connectionIdentity.getPrivateKeyPassword());
+ 
+             session.setSocketFactory(new SocketFactoryBridge(SocketFactory.getDefault()));
+             session.setConfig(props);
+             session.connect();
+         } catch (JSchException e) {
             throw new AuthenticationException(e, "SSH connection failed.");
         }
         
