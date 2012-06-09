@@ -5,7 +5,7 @@
     <packaging>jar</packaging>
     <version>71-jenkins-7-SNAPSHOT</version>
     <name>CvsClient</name>
-    <description>Netbeans cvsclient library patched for serialization</description>
+    <description>Netbeans cvsclient library patched for serialization and synchronization</description>
     <licenses>
        <license>
            <url>http://www.netbeans.org/cddl-gplv2.html</url>
@@ -43,9 +43,9 @@
     </properties>
     
     <scm>
-        <connection>scm:git:git://github.com:mc1arke/cvsclient.git</connection>
-        <developerConnection>scm:git:git@github.com:mc1arke/cvsclient.git</developerConnection>
-        <url>https://github.com/mc1arke/cvsclient</url>
+        <connection>scm:git:git://github.com:jenkinsci/cvsclient.git</connection>
+        <developerConnection>scm:git:git@github.com:jenkinsci/cvsclient.git</developerConnection>
+        <url>https://github.com/jenkinsci/cvsclient</url>
     </scm>
 
     <build>
