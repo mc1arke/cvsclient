@@ -50,6 +50,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.text.MessageFormat;
@@ -220,7 +221,9 @@ public class PServerConnection extends AbstractConnection {
 
         try {
             final SocketFactory sf = (socketFactory != null) ? socketFactory : SocketFactory.getDefault();
-            socket = sf.createSocket(hostName, port);
+            socket = sf.createSocket();
+            // attempt to connect, timeout after 1 minute
+            socket.connect(new InetSocketAddress(hostName, port), 60 * 1000);
 
             final BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream(), 32768);
             final LoggedDataOutputStream outputStream = new LoggedDataOutputStream(bos);
