@@ -43,8 +43,8 @@
     </properties>
     
     <scm>
-        <connection>scm:git:git://github.com:jenkinsci/cvsclient.git</connection>
-        <developerConnection>scm:git:git@github.com:jenkinsci/cvsclient.git</developerConnection>
+        <connection>scm:git:https://github.com/jenkinsci/cvsclient.git</connection>
+        <developerConnection>scm:git:https://github.com/jenkinsci/cvsclient.git</developerConnection>
         <url>https://github.com/jenkinsci/cvsclient</url>
     </scm>
 
