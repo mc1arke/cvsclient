@@ -75,6 +75,8 @@ public class AddTest {
      * <p>
      * Uses fake PseudoCvsServer.
      */
+    // This seems to be a timing condition causing failure. The concept for this test is good but something about it
+    // just doesn't work
     @Ignore("fails randomly on linux for no obvious reason")
     @Test
     public void test36289() throws Exception {
