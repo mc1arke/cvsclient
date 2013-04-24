@@ -58,6 +58,7 @@ import org.netbeans.lib.cvsclient.event.FileInfoEvent;
  */
 public class AddBuilder implements Builder {
     private static final String ADDED = " added to the repository"; // NOI18N
+    private static final String PUT = " put under version control"; //NOI18N
     private static final String SCHEDULING = ": scheduling file `"; // NOI18N
     private static final String DIRECTORY = "Directory "; // NOI18N
     private static final String READDING = ": re-adding file "; // NOI18N
@@ -95,7 +96,10 @@ public class AddBuilder implements Builder {
         if (line.endsWith(ADDED)) {
             final String directory = line.substring(DIRECTORY.length(), line.indexOf(ADDED));
             addDirectory(directory);
-        } else if (line.indexOf(SCHEDULING) >= 0) {
+        } else if (line.endsWith(PUT)) {
+            String directory = line.substring(DIRECTORY.length(), line.indexOf(PUT));
+            addDirectory(directory);
+        }  else if (line.indexOf(SCHEDULING) >= 0) {
             final String filename = line.substring(line.indexOf(SCHEDULING) + SCHEDULING.length(), line.indexOf('\''))
                             .trim();
             addFile(filename);

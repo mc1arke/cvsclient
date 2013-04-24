@@ -95,6 +95,7 @@ public class AddCommand extends BuildableCommand {
      * Constants that identify a message that creates a directory in repository.
      */
     private static final String DIR_ADDED = " added to the repository"; // NOI18N
+    private static final String DIR_PUT = " put under version control"; //NOI18N
     private static final String DIRECTORY = "Directory "; // NOI18N
 
     /**
@@ -609,6 +610,9 @@ public class AddCommand extends BuildableCommand {
         String str = e.getMessage();
         if (str.endsWith(DIR_ADDED)) {
             str = str.substring(DIRECTORY.length(), str.indexOf(DIR_ADDED)).trim();
+            createCvsFiles(str);
+        } else if (str.endsWith(DIR_PUT)) {
+            str = str.substring(DIRECTORY.length(), str.indexOf(DIR_PUT)).trim();
             createCvsFiles(str);
         }
         super.messageSent(e);
