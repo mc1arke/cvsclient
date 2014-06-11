@@ -134,6 +134,34 @@ public abstract class BasicCommand extends BuildableCommand {
     }
 
     /**
+     * Return true if file is a symbolic link.
+     * Symbolic links are ignored by the major cvs clients.
+     * Symbolic link to dir within cvs tree can cause infinate loop of cvs update following symlink. 
+     * Solution when recursive check is directory a symlink and ignore it if so.
+     * JENKINS-23234: jenkins cvs update hang when recursive symlink in directory
+     * @param file name of file/dir/symlink to test
+     * @return true if file is actually a symbolic link, false if not 
+     */
+    public static boolean isSymLink(File file) {
+        if (file == null)
+            return false;
+        try {
+            File canon;
+            if (file.getParent() == null) {
+                canon = file;
+            } else {
+                File canonDir = file.getParentFile().getCanonicalFile();
+                canon = new File(canonDir, file.getName());
+            }
+            return !canon.getCanonicalFile().equals(canon.getAbsoluteFile());
+        } catch (IOException ex) {
+            System.err.println("isSymLink exception:" + ex);
+        }
+        return false;
+    }
+
+
+    /**
      * Set the files and/or directories on which to execute the command. The way
      * these are processed is:
      * <P>
@@ -389,13 +417,22 @@ public abstract class BasicCommand extends BuildableCommand {
         for (final Iterator<?> it = clientServices.getEntries(directory); it.hasNext();) {
             final Entry entry = (Entry) it.next();
             final File file = new File(directory, entry.getName());
-            if (entry.isDirectory()) {
-                if (isRecursive()) {
-                    subDirectories.add(new File(directory, entry.getName()));
+
+            if (!isSymLink(file)) {
+                if (entry.isDirectory()) {
+                    if (isRecursive()) {
+                        subDirectories.add(new File(directory, entry.getName()));
+                    }
                 }
-            } else {
-                addRequestForFile(file, entry);
+                else {
+                    addRequestForFile(file, entry);
+                }
+            } 
+            else {
+                // JENKINS-23234: jenkins cvs update hang when recursive symlink in directory
+                System.err.println("addRequestsForDirectory prevent potential infinate loop, ignoring symlink:" + file);
             }
+            
             localFiles.remove(file);
         }
 
@@ -473,25 +510,35 @@ public abstract class BasicCommand extends BuildableCommand {
      * Adds a DirectoryRequest (and maybe a StickyRequest) to the request list.
      */
     protected final void addDirectoryRequest(final File directory) {
-        // remove localPath prefix from directory. If left with
-        // nothing, use dot (".") in the directory request
-        final String dir = getRelativeToLocalPathInUnixStyle(directory);
 
-        try {
-            final String repository = clientServices.getRepositoryForDirectory(directory.getAbsolutePath());
-            addRequest(new DirectoryRequest(dir, repository));
-            final String tag = clientServices.getStickyTagForDirectory(directory);
-            if (tag != null) {
-                addRequest(new StickyRequest(tag));
+        if (isSymLink(directory)) {
+            // JENKINS-23234: jenkins cvs update hang when recursive symlink in directory
+            System.err.println("addDirectoryRequest prevent potential infinate loop, ignoring symlink:" + directory);
+        } 
+        else {
+
+            // remove localPath prefix from directory. If left with
+            // nothing, use dot (".") in the directory request
+            final String dir = getRelativeToLocalPathInUnixStyle(directory);
+
+            try {
+                final String repository = clientServices.getRepositoryForDirectory(directory.getAbsolutePath());
+                addRequest(new DirectoryRequest(dir, repository));
+                final String tag = clientServices.getStickyTagForDirectory(directory);
+                if (tag != null) {
+                    addRequest(new StickyRequest(tag));
+                }
+            } catch (final FileNotFoundException ex) {
+                // we can ignore this exception safely because it just means
+                // that the user has deleted a directory referenced in a
+                // CVS/Entries file
+            } catch (final IOException ex) {
+                System.err.println("An error occurred reading the respository " + "for the directory " + dir + ": " + ex);
+                ex.printStackTrace();
             }
-        } catch (final FileNotFoundException ex) {
-            // we can ignore this exception safely because it just means
-            // that the user has deleted a directory referenced in a
-            // CVS/Entries file
-        } catch (final IOException ex) {
-            System.err.println("An error occurred reading the respository " + "for the directory " + dir + ": " + ex);
-            ex.printStackTrace();
+
         }
+
     }
 
     /**
